@@ -205,9 +205,13 @@ That's all for today's episode. Join us next time as we explore more on the fron
   };
 
   return (
-    <div className='flex items-center justify-center h-screen w-screen flex-col gap-4'>
-      <h1 className='scroll-m-20 text-center text-5xl font-light tracking-tight'>Turn your papers into podcasts</h1>
-      <h1 className='scroll-m-20 text-center text-2xl text-neutral-500 mb-4'>Knowledge the way you want it</h1>
+    <div className='flex items-center justify-center min-h-screen w-full flex-col gap-4 px-4 py-8 sm:px-6 lg:px-8'>
+      <h1 className='scroll-m-20 text-center text-3xl sm:text-4xl md:text-5xl font-light tracking-tight max-w-4xl px-4'>
+        Turn your papers into podcasts
+      </h1>
+      <h1 className='scroll-m-20 text-center text-lg sm:text-xl md:text-2xl text-neutral-500 mb-4 max-w-2xl px-4'>
+        Knowledge the way you want it
+      </h1>
       <Input
         type="file"
         onChange={(e) => {
@@ -218,22 +222,28 @@ That's all for today's episode. Join us next time as we explore more on the fron
             setAudioUrl(null);
           }
         }}
-        className='w-[20vw] mb-4'
+        className='w-full max-w-md sm:max-w-lg mb-4'
         accept='.pdf'
       />
-      <Button onClick={handleUpload} disabled={isGeneratingAudio}>
-        {isGeneratingAudio ? 'Generating...' : <>Convert to <Mic2Icon/></>}
-      </Button>
-      {/* <Button 
-        onClick={testWithSampleTranscript} 
-        disabled={isGeneratingAudio}
-        variant="outline"
-        className='mt-2'
-      >
-        Test with Sample Transcript
-      </Button> */}
+      <div className='flex flex-col sm:flex-row gap-3 w-full max-w-md sm:max-w-lg items-center justify-center'>
+        <Button 
+          onClick={handleUpload} 
+          disabled={isGeneratingAudio}
+          className='w-full sm:w-auto min-w-[200px]'
+        >
+          {isGeneratingAudio ? 'Generating...' : <>Convert to <Mic2Icon/></>}
+        </Button>
+        <Button 
+          onClick={testWithSampleTranscript} 
+          disabled={isGeneratingAudio}
+          variant="outline"
+          className='w-full sm:w-auto min-w-[200px]'
+        >
+          Hear with Sample Transcript
+        </Button>
+      </div>
       {audioUrl && (
-        <div className='mt-4 w-full max-w-md'>
+        <div className='mt-4 w-full max-w-md sm:max-w-lg lg:max-w-xl px-4'>
           <audio 
             src={audioUrl} 
             controls 
