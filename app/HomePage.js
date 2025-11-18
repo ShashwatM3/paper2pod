@@ -18,7 +18,7 @@ function HomePage() {
   const [audioUrl, setAudioUrl] = useState(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [complexityLevel, setComplexityLevel] = useState("");
-  const [downtime, setDowntime] = useState(true);
+  const [downtime, setDowntime] = useState(false);
 
   async function extractText(file) {
     const { default: pdfToText } = await import('react-pdftotext');
