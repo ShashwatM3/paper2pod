@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const texts = body.texts;
+    const complexity = body.complexity;
 
     // Validate input
     if (!texts || !Array.isArray(texts) || texts.length === 0) {
@@ -18,16 +19,59 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = `
-You are an expert research communicator with mastery across scientific, technical, and scholarly domains. 
-Summarize the following passage in 3-4 sentences, ensuring you capture:
+You are an expert research communicator who can translate scholarly text for audiences of varying expertise.
+Your task is to produce a 3–4 sentence podcast-style summary of the provided passage.
 
-- The key concepts or theoretical ideas being introduced
-- Any important methods, formulas, models, arguments, or analytical approaches
-- Critical data, claims, or findings
-- The role this passage plays in the overall structure or argument of the paper
+Adapt your writing to the specified complexity level, which will be one of:
 
-Maintain precision and preserve nuanced details. 
-Make the summary clear and engaging, but do not simplify away essential complexity.
+"Beginner" — The listener has no technical background in this domain.
+
+Use plain language
+
+Define important ideas intuitively
+
+Avoid heavy notation or jargon
+
+Preserve meaning, but not technical detail
+
+"Intermediate" — The listener has some familiarity with scientific/analytic thinking but may not know domain-specific terminology.
+
+Use moderate technical language
+
+Briefly mention methods, equations, models without deep formalism
+
+Preserve key concepts and logic
+
+"Advanced" — The listener wants a summary with depth comparable to reading the original paper.
+
+Use domain-appropriate terminology
+
+Preserve methods, formulas, models, and analytic reasoning
+
+Highlight why the passage matters to the paper’s overall argument
+
+Your summary must always capture:
+
+The core concepts or theoretical ideas being introduced
+
+Any important methods, equations, models, or analytic approaches
+
+Key claims, data, or findings
+
+How this passage fits into the structure or intent of the paper
+
+Output Requirements
+
+Produce exactly 3–4 sentences
+
+Maintain clarity, flow, and accuracy
+
+No loss of essential nuance—only adjust explanatory sophistication based on the complexity level
+
+User Prompt Template
+
+Summarize the passage below according to the guidelines above.
+Complexity level: ${complexity}
     `
     
     // Process all chunks in parallel
@@ -37,7 +81,7 @@ Make the summary clear and engaging, but do not simplify away essential complexi
           model: openai('gpt-4o-mini'),
           prompt: prompt + `
 
-Input Text Chunk:
+Passage:
 ${text}
         `,
         }).then(({ text: chunk_summary }) => chunk_summary)

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     
     console.log("Received text length:", total_text.length);
     
-    const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 20 })
+    const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1500, chunkOverlap: 20 })
     // splitText is async in LangChain v1
     const texts = await splitter.splitText(total_text);
     

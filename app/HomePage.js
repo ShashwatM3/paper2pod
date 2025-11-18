@@ -1,7 +1,15 @@
 'use client'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic2Icon } from 'lucide-react';
+import { Mic2, Mic2Icon } from 'lucide-react';
 import React, { useState } from 'react'
 import { toast } from 'sonner';
 
@@ -9,6 +17,7 @@ function HomePage() {
   const [file, setFile] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [complexityLevel, setComplexityLevel] = useState("");
 
   async function extractText(file) {
     const { default: pdfToText } = await import('react-pdftotext');
@@ -123,6 +132,7 @@ That's all for today's episode. Join us next time as we explore more on the fron
               },
               body: JSON.stringify({
                 texts: splitterData.texts,
+                complexity: complexityLevel
               }),
             });
           
@@ -226,21 +236,48 @@ That's all for today's episode. Join us next time as we explore more on the fron
         accept='.pdf'
       />
       <div className='flex flex-col sm:flex-row gap-3 w-full max-w-md sm:max-w-lg items-center justify-center'>
-        <Button 
-          onClick={handleUpload} 
-          disabled={isGeneratingAudio}
-          className='w-full sm:w-auto min-w-[200px]'
-        >
-          {isGeneratingAudio ? 'Generating...' : <>Convert to <Mic2Icon/></>}
-        </Button>
-        <Button 
+        {isGeneratingAudio ? (
+          <Button 
+            disabled={true}
+            className='w-full sm:w-auto min-w-[200px]'
+          >
+            'Generating...'
+          </Button>
+        ): file ? (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Convert to <Mic2Icon/></Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Choose your complexity level</DialogTitle>
+                <DialogDescription className="mb-3">
+                  How in-depth do you want the podcast to go into, for this paper? (i.e. knowledge complexity level)
+                </DialogDescription>
+                {["BEGINNER", "INTERMEDIATE", "As complex as the paper"].map((complexity, index) => (
+                  <Button 
+                    onClick={() => setComplexityLevel(complexity)} 
+                    variant={complexity == complexityLevel ? "secondary" : ""} 
+                    className="w-full" 
+                    key={`complexity-${complexity}-${index}`}
+                  >
+                    {complexity}
+                  </Button>
+                ))}
+                <br/>
+                <Button className="bg-blue-600" onClick={handleUpload} disabled={complexityLevel.length==0 || isGeneratingAudio}>Generate Podcast <Mic2/></Button>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        ) : null}
+        {/* <Button 
           onClick={testWithSampleTranscript} 
           disabled={isGeneratingAudio}
           variant="outline"
           className='w-full sm:w-auto min-w-[200px]'
         >
           Hear with Sample Transcript
-        </Button>
+        </Button> */}
       </div>
       {audioUrl && (
         <div className='mt-4 w-full max-w-md sm:max-w-lg lg:max-w-xl px-4'>
