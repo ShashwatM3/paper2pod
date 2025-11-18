@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic2, Mic2Icon } from 'lucide-react';
+import { Download, Mic2, Mic2Icon } from 'lucide-react';
 import React, { useState } from 'react'
 import { toast } from 'sonner';
 
@@ -214,6 +214,15 @@ That's all for today's episode. Join us next time as we explore more on the fron
     }
   };
 
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = audioUrl;
+    link.download = 'audio.mp3'; // You can customize the filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className='flex items-center justify-center min-h-screen w-full flex-col gap-4 px-4 py-8 sm:px-6 lg:px-8'>
       <h1 className='scroll-m-20 text-center text-3xl sm:text-4xl md:text-5xl font-light tracking-tight max-w-4xl px-4'>
@@ -246,7 +255,7 @@ That's all for today's episode. Join us next time as we explore more on the fron
         ): file ? (
           <Dialog>
             <DialogTrigger asChild>
-              <Button>Convert to <Mic2Icon/></Button>
+              <Button disabled={audioUrl}>Convert to <Mic2Icon/></Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -289,6 +298,8 @@ That's all for today's episode. Join us next time as we explore more on the fron
           >
             Your browser does not support the audio element.
           </audio>
+          <br/>
+          <Button onClick={handleDownload}>Download Podcast <Download/></Button>
         </div>
       )}
     </div>
