@@ -18,6 +18,7 @@ function HomePage() {
   const [audioUrl, setAudioUrl] = useState(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [complexityLevel, setComplexityLevel] = useState("");
+  const [downtime, setDowntime] = useState(true);
 
   async function extractText(file) {
     const { default: pdfToText } = await import('react-pdftotext');
@@ -231,76 +232,82 @@ That's all for today's episode. Join us next time as we explore more on the fron
       <h1 className='scroll-m-20 text-center text-lg sm:text-xl md:text-2xl text-neutral-500 mb-4 max-w-2xl px-4'>
         Knowledge the way you want it
       </h1>
-      <Input
-        type="file"
-        onChange={(e) => {
-          setFile(e.target.files?.[0] || null);
-          // Clean up previous audio URL
-          if (audioUrl) {
-            URL.revokeObjectURL(audioUrl);
-            setAudioUrl(null);
-          }
-        }}
-        className='w-full max-w-md sm:max-w-lg mb-4'
-        accept='.pdf'
-      />
-      <div className='flex flex-col sm:flex-row gap-3 w-full max-w-md sm:max-w-lg items-center justify-center'>
-        {isGeneratingAudio ? (
-          <Button 
-            disabled={true}
+      {downtime ? (
+        <h1>Servers are down. Working on it and will get it up and running by 18th Nov.</h1>
+      ):(
+        <>
+        <Input
+          type="file"
+          onChange={(e) => {
+            setFile(e.target.files?.[0] || null);
+            // Clean up previous audio URL
+            if (audioUrl) {
+              URL.revokeObjectURL(audioUrl);
+              setAudioUrl(null);
+            }
+          }}
+          className='w-full max-w-md sm:max-w-lg mb-4'
+          accept='.pdf'
+        />
+        <div className='flex flex-col sm:flex-row gap-3 w-full max-w-md sm:max-w-lg items-center justify-center'>
+          {isGeneratingAudio ? (
+            <Button 
+              disabled={true}
+              className='w-full sm:w-auto min-w-[200px]'
+            >
+              'Generating...'
+            </Button>
+          ): file ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button disabled={audioUrl}>Convert to <Mic2Icon/></Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Choose your complexity level</DialogTitle>
+                  <DialogDescription className="mb-3">
+                    How in-depth do you want the podcast to go into, for this paper? (i.e. knowledge complexity level)
+                  </DialogDescription>
+                  {["BEGINNER", "INTERMEDIATE", "As complex as the paper"].map((complexity, index) => (
+                    <Button 
+                      onClick={() => setComplexityLevel(complexity)} 
+                      variant={complexity == complexityLevel ? "secondary" : ""} 
+                      className="w-full" 
+                      key={`complexity-${complexity}-${index}`}
+                    >
+                      {complexity}
+                    </Button>
+                  ))}
+                  <br/>
+                  <Button className="bg-blue-600" onClick={handleUpload} disabled={complexityLevel.length==0 || isGeneratingAudio}>Generate Podcast <Mic2/></Button>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          ) : null}
+          {/* <Button 
+            onClick={testWithSampleTranscript} 
+            disabled={isGeneratingAudio}
+            variant="outline"
             className='w-full sm:w-auto min-w-[200px]'
           >
-            'Generating...'
-          </Button>
-        ): file ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button disabled={audioUrl}>Convert to <Mic2Icon/></Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Choose your complexity level</DialogTitle>
-                <DialogDescription className="mb-3">
-                  How in-depth do you want the podcast to go into, for this paper? (i.e. knowledge complexity level)
-                </DialogDescription>
-                {["BEGINNER", "INTERMEDIATE", "As complex as the paper"].map((complexity, index) => (
-                  <Button 
-                    onClick={() => setComplexityLevel(complexity)} 
-                    variant={complexity == complexityLevel ? "secondary" : ""} 
-                    className="w-full" 
-                    key={`complexity-${complexity}-${index}`}
-                  >
-                    {complexity}
-                  </Button>
-                ))}
-                <br/>
-                <Button className="bg-blue-600" onClick={handleUpload} disabled={complexityLevel.length==0 || isGeneratingAudio}>Generate Podcast <Mic2/></Button>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        ) : null}
-        {/* <Button 
-          onClick={testWithSampleTranscript} 
-          disabled={isGeneratingAudio}
-          variant="outline"
-          className='w-full sm:w-auto min-w-[200px]'
-        >
-          Hear with Sample Transcript
-        </Button> */}
-      </div>
-      {audioUrl && (
-        <div className='mt-4 w-full max-w-md sm:max-w-lg lg:max-w-xl px-4'>
-          <audio 
-            src={audioUrl} 
-            controls 
-            autoPlay
-            className='w-full'
-          >
-            Your browser does not support the audio element.
-          </audio>
-          <br/>
-          <Button onClick={handleDownload}>Download Podcast <Download/></Button>
+            Hear with Sample Transcript
+          </Button> */}
         </div>
+        {audioUrl && (
+          <div className='mt-4 w-full max-w-md sm:max-w-lg lg:max-w-xl px-4'>
+            <audio 
+              src={audioUrl} 
+              controls 
+              autoPlay
+              className='w-full'
+            >
+              Your browser does not support the audio element.
+            </audio>
+            <br/>
+            <Button onClick={handleDownload}>Download Podcast <Download/></Button>
+          </div>
+        )}
+        </>
       )}
     </div>
   )
